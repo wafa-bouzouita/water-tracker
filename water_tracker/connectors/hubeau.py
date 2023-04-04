@@ -28,6 +28,7 @@ def retrieve_data_next_page(
     response = requests.get(url, params)
     response.raise_for_status()
     response_json = response.json()
+    # Checking whether the page is the last or not
     if "next" not in response_json.keys():
         next_page = ""
     elif response_json["next"] is None:
@@ -107,8 +108,10 @@ class PiezoConnector:
         dfs_all_pages = []
         while next_page != "":
             df, next_page = retrieve_data_next_page(next_page, params)
+            # Filtering data using defined columns
             if self.stations_columns:
                 df = df.filter(self.stations_columns, axis=1)
+            # Converting 'dates' columns to datetime
             if self.stations_date_columns:
                 date_cols = self.stations_date_columns
                 df.loc[:, date_cols] = df.loc[:, date_cols].apply(
@@ -137,8 +140,10 @@ class PiezoConnector:
         dfs_all_pages = []
         while next_page != "":
             df, next_page = retrieve_data_next_page(next_page, params)
+            # Filtering data using defined columns
             if self.chronicles_columns:
                 df = df.filter(self.chronicles_columns, axis=1)
+                # Converting 'dates' columns to datetime
             if self.chronicles_date_columns:
                 date_cols = self.chronicles_date_columns
                 df.loc[:, date_cols] = df.loc[:, date_cols].apply(
