@@ -16,6 +16,8 @@ types-requests = "^2.28.11.17"
 xarray = "^2023.3.0"
 cdsapi = "^0.6.1"
 python-dotenv = "^1.0.0"
+netcdf4 = "^1.6.3"
+scipy = "^1.10.1"
 
 
 [tool.poetry.group.dev.dependencies]
