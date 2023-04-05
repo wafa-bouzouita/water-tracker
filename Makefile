@@ -1,6 +1,6 @@
 PYTHON = $(shell command -v python 2> /dev/null)
 VIRTUAL_ENV = .venv
-STREAMLIT_MAIN_SCRIPT = scripts/streamlit_app.py
+STREAMLIT_MAIN_SCRIPT = app/main.py
 
 clean:
 	rm -rf ${VIRTUAL_ENV}
