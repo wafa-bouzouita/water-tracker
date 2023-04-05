@@ -187,4 +187,5 @@ pyrightconfig.json
 .history
 .ionide
 
-# End of https://www.toptal.com/developers/gitignore/api/python,visualstudiocode
+# Folder to store mock data for local testing
+mock_data
