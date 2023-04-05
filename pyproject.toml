@@ -13,6 +13,9 @@ pandas = "<2.0.0"
 requests = "^2.28.2"
 numpy = "^1.24.2"
 types-requests = "^2.28.11.17"
+xarray = "^2023.3.0"
+cdsapi = "^0.6.1"
+python-dotenv = "^1.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
