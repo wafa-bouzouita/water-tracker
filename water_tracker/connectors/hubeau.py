@@ -101,8 +101,8 @@ class PiezoStationsConnector(HubeauConnector):
 
     Examples
     --------
-    >>> from water_tracker.connectors import hubeau
-    >>> connector = hubeau.PiezoStationsConnector
+    >>> from water_tracker import connectors
+    >>> connector = connectors.PiezoStationsConnector
     >>> connector.retrieve(params=dict(code_departement="01"))
     """
 
@@ -137,9 +137,8 @@ class PiezoStationsConnector(HubeauConnector):
         pd.DataFrame
             Output dataframe for the request.
 
-        Notes
-        -----
-        See also
+        See Also
+        --------
         https://hubeau.eaufrance.fr/page/api-piezometrie#/niveaux-nappes/stations
         for more informations on which parameters to use.
         """
@@ -151,8 +150,8 @@ class PiezoChroniclesConnector(HubeauConnector):
 
     Examples
     --------
-    >>> from water_tracker.connectors import hubeau
-    >>> connector = hubeau.PiezoStationsConnector
+    >>> from water_tracker import connectors
+    >>> connector = connectors.PiezoStationsConnector
     >>> connector.retrieve(params=dict(code_bss="07004X0046/D6-20"))
     """
 
@@ -181,9 +180,8 @@ class PiezoChroniclesConnector(HubeauConnector):
         pd.DataFrame
             Output dataframe for the request.
 
-        Notes
-        -----
-        See also
+        See Also
+        --------
         https://hubeau.eaufrance.fr/page/api-piezometrie#/niveaux-nappes/chroniques
         for more informations on which parameters to use.
         """
