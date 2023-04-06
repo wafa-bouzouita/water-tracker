@@ -189,3 +189,6 @@ pyrightconfig.json
 
 # Folder to store mock data for local testing
 mock_data
+
+# Private key for CDS API
+.env
