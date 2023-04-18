@@ -48,6 +48,13 @@ class HubeauConnector(BaseConnector, ABC):
     @property
     @abstractmethod
     def url(self) -> str:
+        """Url to which the request is made.
+
+        Returns
+        -------
+        str
+            Url
+        """
         ...
 
     def _format_ouput(self, output: pd.DataFrame) -> pd.DataFrame:

@@ -22,6 +22,6 @@ install:
 	@${MAKE} -s poetry-install
 
 .PHONY: streamlit-run
-streamlit-run: 
+streamlit-run:
 	. .venv/Scripts/activate
 	streamlit run ${STREAMLIT_MAIN_SCRIPT}

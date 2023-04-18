@@ -25,10 +25,14 @@ black = "^23.3.0"
 ruff = "^0.0.260"
 mypy = "^1.1.1"
 interrogate = "^1.5.0"
+pre-commit = "^3.2.2"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 79
 
 [tool.interrogate]
 ignore-init-method = true
@@ -42,7 +46,7 @@ ignore-nested-functions = true
 ignore-nested-classes = true
 ignore-setters = false
 fail-under = 100
-exclude = ["setup.py", "docs", "build", "tests", "scripts"]
+exclude = ["setup.py", "docs", "build", "tests", "scripts", "app"]
 verbose = 1
 quiet = false
 whitelist-regex = []
