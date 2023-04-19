@@ -54,6 +54,8 @@ select = [
     'Q',
     # flake8-self
     "SLF",
+    # flake8-type-checking
+    "TCH",
     # pylint
     "PLE", "PLR", "PLW",
     # Ruff-specific rules
