@@ -36,7 +36,19 @@ line-length = 79
 
 [tool.ruff]
 line-length = 79
-select = ['E', 'W', 'D']
+select = [
+    # pycodestyle Errors (E) and Warnings (W)
+    'E',
+    'W',
+    # pydocstyle
+    'D',
+    # pyflakes
+    'F',
+]
+ignore = [
+    # do not assign a lambda expression, use a def
+    "E731",
+]
 
 [tool.ruff.pydocstyle]
 convention = 'numpy'
