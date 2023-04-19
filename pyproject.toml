@@ -48,10 +48,14 @@ select = [
     'B',
     # flake8-quotes
     'Q',
+    # pylint
+    "PLE", "PLR", "PLW",
 ]
 ignore = [
     # do not assign a lambda expression, use a def
     "E731",
+    # Too many arguments to function call
+    "PLR0913",
 ]
 
 [tool.ruff.pydocstyle]
