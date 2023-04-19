@@ -50,6 +50,8 @@ select = [
     'Q',
     # pylint
     "PLE", "PLR", "PLW",
+    # Ruff-specific rules
+    'RUF',
 ]
 ignore = [
     # do not assign a lambda expression, use a def
