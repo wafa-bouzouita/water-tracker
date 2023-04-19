@@ -1,8 +1,8 @@
 """Copernicus Connectors."""
 
-import os
 import tempfile
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import cdsapi
@@ -186,7 +186,7 @@ class BaseERA5Connector(BaseConnector, ABC):
             output = xr.open_dataset(file.name).to_dataframe().reset_index()
             # Close the temporary file
             file.close()
-            os.unlink(file.name)
+            Path.unlink(file.name)
         df = self._format_ouput(output)
         return df
 
