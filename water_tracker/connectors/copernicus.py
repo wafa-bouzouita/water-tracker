@@ -173,7 +173,9 @@ class BaseERA5Connector(BaseConnector, ABC):
         """
         # Download the file in a named temporary file
         with tempfile.NamedTemporaryFile(
-            delete=False, dir=".", suffix=".nc"
+            delete=False,
+            dir=".",
+            suffix=".nc",
         ) as file:
             self.client.retrieve(
                 name=self.name,

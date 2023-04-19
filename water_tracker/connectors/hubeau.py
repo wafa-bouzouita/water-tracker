@@ -12,7 +12,8 @@ from water_tracker.connectors.base import BaseConnector
 
 @st.cache_data(ttl=24 * 60 * 60)
 def retrieve_data_next_page(
-    url: str, params: dict
+    url: str,
+    params: dict,
 ) -> Tuple[pd.DataFrame, str]:
     """Retrieve data from a given url and with the given parameters.
 
