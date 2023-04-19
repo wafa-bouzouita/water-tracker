@@ -52,6 +52,8 @@ select = [
     'C4',
     # flake8-quotes
     'Q',
+    # flake8-self
+    "SLF",
     # pylint
     "PLE", "PLR", "PLW",
     # Ruff-specific rules
