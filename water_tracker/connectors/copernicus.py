@@ -186,7 +186,7 @@ class BaseERA5Connector(BaseConnector, ABC):
             output = xr.open_dataset(file.name).to_dataframe().reset_index()
             # Close the temporary file
             file.close()
-            Path.unlink(file.name)
+            Path.unlink(Path(file.name))
         df = self._format_ouput(output)
         return df
 
