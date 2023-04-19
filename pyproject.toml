@@ -60,6 +60,8 @@ select = [
     "SLF",
     # flake8-type-checking
     "TCH",
+    # pep8-naming
+    'N',
     # pylint
     "PLE", "PLR", "PLW",
     # Ruff-specific rules
