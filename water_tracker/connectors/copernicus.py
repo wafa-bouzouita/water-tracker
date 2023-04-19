@@ -56,8 +56,11 @@ default_area: list[float] = [
 
 
 class BaseERA5Connector(BaseConnector, ABC):
-    """Connector class to retrieve data from \
-    https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land?tab=overview.\
+    """Connector class to retrieve data from Copernicus.
+
+    Data is retrieved from:
+    https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-land?tab=overview.
+
     Data is downloaded from the provider and saved in a file using the cdsapi\
     library. Data is then read and converted as a pandas DataFrame.
 
@@ -79,7 +82,7 @@ class BaseERA5Connector(BaseConnector, ABC):
     @property
     @abstractmethod
     def variable(self) -> str:
-        """Variable to collect form the Dataset.
+        """Variable to collect from the Dataset.
 
         Returns
         -------
@@ -158,7 +161,7 @@ class BaseERA5Connector(BaseConnector, ABC):
     ) -> pd.DataFrame:
         """Retrieve data.
 
-         Parameters
+        Parameters
         ----------
         request : dict
             Parameters for the API call.
@@ -187,7 +190,7 @@ class BaseERA5Connector(BaseConnector, ABC):
 
 
 class PrecipitationsERA5Connector(BaseERA5Connector):
-    """Connector for total Precipitation Data Collection
+    """Connector for total Precipitation Data Collection.
 
     Examples
     --------

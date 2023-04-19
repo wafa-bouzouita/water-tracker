@@ -1,3 +1,6 @@
+"""Connectors to retrieve data from providers."""
+
+
 from water_tracker.connectors.copernicus import PrecipitationsERA5Connector
 from water_tracker.connectors.hubeau import (
     PiezoChroniclesConnector,

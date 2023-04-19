@@ -34,6 +34,13 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 line-length = 79
 
+[tool.ruff]
+line-length = 79
+select = ['E', 'W', 'D']
+
+[tool.ruff.pydocstyle]
+convention = 'numpy'
+
 [tool.interrogate]
 ignore-init-method = true
 ignore-init-module = true
