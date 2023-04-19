@@ -44,6 +44,8 @@ select = [
     'D',
     # pyflakes
     'F',
+    # flake8-builtins
+    "A",
     # flake8-unused-arguments
     "ARG",
     # flake8-bugbear

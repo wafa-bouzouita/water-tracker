@@ -74,9 +74,9 @@ class BaseERA5Connector(BaseConnector, ABC):
     client: "Client" = cdsapi.Client(verify=True)
     name: str = "reanalysis-era5-land"
     product_type: str = "reanalysis"
-    format: str = "netcdf"
+    file_format: str = "netcdf"
 
-    def __init__(self, reload=True) -> None:
+    def __init__(self, reload: bool = True) -> None:
         self.reload = reload
 
     @property
@@ -146,7 +146,7 @@ class BaseERA5Connector(BaseConnector, ABC):
         request = {
             "product_type": self.product_type,
             "variable": self.variable,
-            "format": self.format,
+            "format": self.file_format,
             "year": years,
             "month": months,
             "day": days,
