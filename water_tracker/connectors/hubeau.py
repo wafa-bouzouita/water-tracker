@@ -75,9 +75,9 @@ class HubeauConnector(BaseConnector, ABC):
         if self.columns_to_keep:
             df = df.filter(self.columns_to_keep, axis=1)
         # Converting 'dates' columns to datetime
-        if self.date_columns:
-            date_cols = self.date_columns
-            df.loc[:, date_cols] = df.loc[:, date_cols].apply(pd.to_datetime)
+        for column in self.date_columns:
+            if column in df.columns:
+                df.loc[:, column] = pd.to_datetime(df.loc[:, column])
         return df
 
     def retrieve(self, params: dict) -> pd.DataFrame:
@@ -126,6 +126,7 @@ class PiezoStationsConnector(HubeauConnector):
         "nom_departement",
         "nb_mesure_piezo",
         "code_masse_eau",
+        "libelle_pe",
     ]
     date_columns: list[str] = [
         "date_debut_mesure",
