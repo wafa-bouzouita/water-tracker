@@ -44,6 +44,8 @@ select = [
     'D',
     # pyflakes
     'F',
+    # flake8-bugbear
+    'B',
 ]
 ignore = [
     # do not assign a lambda expression, use a def

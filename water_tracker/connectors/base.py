@@ -9,9 +9,6 @@ import pandas as pd
 class BaseConnector(ABC):
     """Base class for connectors."""
 
-    def __init__(self) -> None:
-        pass
-
     @abstractmethod
     def retrieve(self, params: dict) -> pd.DataFrame:
         """Retrieve data using the connection to the API.
