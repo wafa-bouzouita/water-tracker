@@ -1,7 +1,6 @@
 """Base classes for API connection module."""
 
 from abc import ABC, abstractmethod
-from typing import Any
 
 import pandas as pd
 
@@ -50,7 +49,7 @@ class BaseConnector(ABC):
         ...
 
     @abstractmethod
-    def _format_ouput(self, output: Any) -> pd.DataFrame:
+    def _format_ouput(self, output: pd.DataFrame) -> pd.DataFrame:
         """Format the output of the request sending function.
 
         Parameters

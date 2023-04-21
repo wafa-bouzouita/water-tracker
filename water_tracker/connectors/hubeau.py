@@ -1,7 +1,6 @@
 """Hubeau Connectors."""
 
 from abc import ABC, abstractmethod
-from typing import Tuple
 
 import pandas as pd
 import requests
@@ -14,7 +13,7 @@ from water_tracker.connectors.base import BaseConnector
 def retrieve_data_next_page(
     url: str,
     params: dict,
-) -> Tuple[pd.DataFrame, str]:
+) -> tuple[pd.DataFrame, str]:
     """Retrieve data from a given url and with the given parameters.
 
     Parameters
@@ -33,14 +32,12 @@ def retrieve_data_next_page(
     response.raise_for_status()
     response_json = response.json()
     # Checking whether the page is the last or not
-    if "next" not in response_json.keys():
-        next_page = ""
-    elif response_json["next"] is None:
+    if "next" not in response_json.keys() or response_json["next"] is None:
         next_page = ""
     else:
         next_page = response_json["next"]
-    df = pd.DataFrame.from_dict(response_json["data"])
-    return df, next_page
+    response_df = pd.DataFrame.from_dict(response_json["data"])
+    return response_df, next_page
 
 
 class HubeauConnector(BaseConnector, ABC):
@@ -58,7 +55,10 @@ class HubeauConnector(BaseConnector, ABC):
         """
         ...
 
-    def _format_ouput(self, output: pd.DataFrame) -> pd.DataFrame:
+    def _format_ouput(
+        self,
+        output: pd.DataFrame,
+    ) -> pd.DataFrame:
         """Format the output of the request function retrieve_data_next_page.
 
         Parameters
@@ -71,14 +71,16 @@ class HubeauConnector(BaseConnector, ABC):
         pd.DataFrame
             Formatted dataframe.
         """
-        df = output.copy()
+        response_df = output.copy()
         if self.columns_to_keep:
-            df = df.filter(self.columns_to_keep, axis=1)
+            response_df = response_df.filter(self.columns_to_keep, axis=1)
         # Converting 'dates' columns to datetime
         for column in self.date_columns:
-            if column in df.columns:
-                df.loc[:, column] = pd.to_datetime(df.loc[:, column])
-        return df
+            if column in response_df.columns:
+                response_df.loc[:, column] = pd.to_datetime(
+                    response_df.loc[:, column],
+                )
+        return response_df
 
     def retrieve(self, params: dict) -> pd.DataFrame:
         """Retrieve data.
@@ -96,11 +98,11 @@ class HubeauConnector(BaseConnector, ABC):
         """
         next_page = self.url
         dfs_all_pages = []
-        while next_page != "":
+        while next_page:
             output, next_page = retrieve_data_next_page(next_page, params)
             # Filtering data using defined columns
-            df = self._format_ouput(output)
-            dfs_all_pages.append(df)
+            formatted_df = self._format_ouput(output)
+            dfs_all_pages.append(formatted_df)
         return pd.concat(dfs_all_pages)
 
 
