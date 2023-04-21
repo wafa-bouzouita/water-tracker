@@ -1,7 +1,6 @@
 """Main script to run for streamlit app."""
 
 import datetime as dt
-from typing import Any
 
 import plotly.graph_objects as go
 import streamlit as st
@@ -30,18 +29,18 @@ stations = stations_connector.retrieve(stations_params)
 has_no_start_measure_date = stations["date_debut_mesure"].isna()
 has_no_end_measure_date = stations["date_fin_mesure"].isna()
 has_no_measure_date = has_no_start_measure_date & has_no_end_measure_date
-stations.drop(index=stations[has_no_measure_date].index, inplace=True)
+stations = stations.drop(index=stations[has_no_measure_date].index)
 # Replace unknown city names
 unknown_name = stations["nom_commune"].isna()
 stations.loc[unknown_name, "nom_commune"] = "Commune Inconnue"
 
 
-def format_func(row_id: Any) -> str:
+def format_func(row_id: int) -> str:
     """Format the bss code display name.
 
     Parameters
     ----------
-    row_id : Any
+    row_id : int
         Index of the row to display the code of.
 
     Returns

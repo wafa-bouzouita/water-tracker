@@ -91,7 +91,10 @@ class BaseERA5Connector(BaseConnector, ABC):
         """
         ...
 
-    def _format_ouput(self, output: pd.DataFrame) -> pd.DataFrame:
+    def _format_ouput(
+        self,
+        output: pd.DataFrame,
+    ) -> pd.DataFrame:
         """Format the output of the request function retrieve_data_next_page.
 
         Parameters
@@ -104,14 +107,17 @@ class BaseERA5Connector(BaseConnector, ABC):
         pd.DataFrame
             Formatted dataframe.
         """
-        df = output.copy()
+        response_df = output.copy()
         if self.columns_to_keep:
-            df = df.filter(self.columns_to_keep, axis=1)
+            response_df = response_df.filter(self.columns_to_keep, axis=1)
         # Converting 'dates' columns to datetime
         if self.date_columns:
             date_cols = self.date_columns
-            df.loc[:, date_cols] = df.loc[:, date_cols].apply(pd.to_datetime)
-        return df
+            response_df.loc[:, date_cols] = response_df.loc[
+                :,
+                date_cols,
+            ].apply(pd.to_datetime)
+        return response_df
 
     def make_request(
         self,
@@ -143,7 +149,7 @@ class BaseERA5Connector(BaseConnector, ABC):
             Request dictionnary.
         """
         # Request dictionnary definition
-        request = {
+        return {
             "product_type": self.product_type,
             "variable": self.variable,
             "format": self.file_format,
@@ -153,7 +159,6 @@ class BaseERA5Connector(BaseConnector, ABC):
             "time": times,
             "area": area,
         }
-        return request
 
     def retrieve(
         self,
@@ -187,8 +192,7 @@ class BaseERA5Connector(BaseConnector, ABC):
             # Close the temporary file
             file.close()
             Path.unlink(Path(file.name))
-        df = self._format_ouput(output)
-        return df
+        return self._format_ouput(output)
 
 
 class PrecipitationsERA5Connector(BaseERA5Connector):
@@ -206,7 +210,10 @@ class PrecipitationsERA5Connector(BaseERA5Connector):
     columns_to_keep: list[str] = ["longitude", "latitude", "time", "tp"]
     date_columns: list[str] = ["time"]
 
-    def retrieve(self, params: dict) -> pd.DataFrame:
+    def retrieve(
+        self,
+        params: dict,
+    ) -> pd.DataFrame:
         """Retrieve total precipitation data from Copernicus ERA5 land dataset.
 
         Parameters
