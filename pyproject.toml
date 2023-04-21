@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
-packages = [{include = "water_tracker"}]
+packages = [{ include = "water_tracker" }]
 
 [tool.poetry.dependencies]
 python = "~3.10"
@@ -66,7 +66,9 @@ select = [
     # pep8-naming
     'N',
     # pylint
-    "PLE", "PLR", "PLW",
+    "PLE",
+    "PLR",
+    "PLW",
     # Ruff-specific rules
     'RUF',
 ]
@@ -75,6 +77,16 @@ ignore = [
     "E731",
     # Too many arguments to function call
     "PLR0913",
+]
+unfixable = [
+    # Remove unused-imports
+    "F401",
+    # Variable assigned but never used
+    "F841",
+    # Use {key} in {dict} instead of {key} in {dict}.keys()
+    "SIM118",
+    # move to type-checking block
+    "TCH003",
 ]
 
 [tool.ruff.pydocstyle]
