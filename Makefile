@@ -47,3 +47,8 @@ install-dev:
 	${MAKE} -s ${VIRTUAL_ENV}
 	${MAKE} -s poetry-install-dev
 	${MAKE} -s hooks-install
+
+.PHONY: tests
+tests:
+	${MAKE} -s install-dev
+	${BIN}pytest

@@ -27,6 +27,10 @@ ruff = "^0.0.261"
 mypy = "^1.1.1"
 interrogate = "^1.5.0"
 pre-commit = "^3.2.2"
+pytest = "^7.3.1"
+coverage = {extras = ["toml"], version = "^7.2.3"}
+pytest-cov = "^4.0.0"
+pytest-mock = "^3.10.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -58,6 +62,7 @@ ignore = [
     "ANN101",
     # suppressible-exception
     "SIM105",
+    "INP001",
 ]
 unfixable = [
     # Remove unused-imports
@@ -68,6 +73,8 @@ unfixable = [
     "SIM118",
     # move to type-checking block
     "TCH003",
+    # found comented-out code
+    "ERA001",
 ]
 namespace-packages = ["app", "app/*"]
 
@@ -92,3 +99,20 @@ quiet = false
 whitelist-regex = []
 color = true
 omit-covered-files = false
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+    "--cov",
+]
+testpaths = ["tests"]
+
+[tool.coverage.paths]
+source = ["water_tracker", "*/site-packages"]
+
+[tool.coverage.run]
+branch = true
+source = ["water_tracker"]
+
+[tool.coverage.report]
+show_missing = true
