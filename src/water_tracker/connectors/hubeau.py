@@ -1,19 +1,20 @@
 """Hubeau Connectors."""
 
 from abc import ABC, abstractmethod
-from typing import Tuple
 
 import pandas as pd
 import requests
 import streamlit as st
+from requests import HTTPError
 
 from water_tracker.connectors.base import BaseConnector
 
 
 @st.cache_data(ttl=24 * 60 * 60)
 def retrieve_data_next_page(
-    url: str, params: dict
-) -> Tuple[pd.DataFrame, str]:
+    url: str,
+    params: dict,
+) -> tuple[pd.DataFrame, str]:
     """Retrieve data from a given url and with the given parameters.
 
     Parameters
@@ -29,17 +30,20 @@ def retrieve_data_next_page(
         Result DataFrame, next page url ("" if last)
     """
     response = requests.get(url, params)
-    response.raise_for_status()
-    response_json = response.json()
-    # Checking whether the page is the last or not
-    if "next" not in response_json.keys():
+    try:
+        response.raise_for_status()
+    except HTTPError:
         next_page = ""
-    elif response_json["next"] is None:
-        next_page = ""
+        response_df = pd.DataFrame()
     else:
-        next_page = response_json["next"]
-    df = pd.DataFrame.from_dict(response_json["data"])
-    return df, next_page
+        response_json = response.json()
+        # Checking whether the page is the last or not
+        if "next" not in response_json.keys() or response_json["next"] is None:
+            next_page = ""
+        else:
+            next_page = response_json["next"]
+        response_df = pd.DataFrame.from_dict(response_json["data"])
+    return response_df, next_page
 
 
 class HubeauConnector(BaseConnector, ABC):
@@ -48,29 +52,13 @@ class HubeauConnector(BaseConnector, ABC):
     @property
     @abstractmethod
     def url(self) -> str:
-        ...
-
-    def _format_ouput(self, output: pd.DataFrame) -> pd.DataFrame:
-        """Format the output of the request function retrieve_data_next_page.
-
-        Parameters
-        ----------
-        output : pd.DataFrame
-            Output of the API request made by retrieve_data_next_page.
+        """Url to which the request is made.
 
         Returns
         -------
-        pd.DataFrame
-            Formatted dataframe.
+        str
+            Url
         """
-        df = output.copy()
-        if self.columns_to_keep:
-            df = df.filter(self.columns_to_keep, axis=1)
-        # Converting 'dates' columns to datetime
-        if self.date_columns:
-            date_cols = self.date_columns
-            df.loc[:, date_cols] = df.loc[:, date_cols].apply(pd.to_datetime)
-        return df
 
     def retrieve(self, params: dict) -> pd.DataFrame:
         """Retrieve data.
@@ -88,11 +76,11 @@ class HubeauConnector(BaseConnector, ABC):
         """
         next_page = self.url
         dfs_all_pages = []
-        while next_page != "":
+        while next_page:
             output, next_page = retrieve_data_next_page(next_page, params)
             # Filtering data using defined columns
-            df = self._format_ouput(output)
-            dfs_all_pages.append(df)
+            formatted_df = self.format_ouput(output)
+            dfs_all_pages.append(formatted_df)
         return pd.concat(dfs_all_pages)
 
 
@@ -118,6 +106,7 @@ class PiezoStationsConnector(HubeauConnector):
         "nom_departement",
         "nb_mesure_piezo",
         "code_masse_eau",
+        "libelle_pe",
     ]
     date_columns: list[str] = [
         "date_debut_mesure",

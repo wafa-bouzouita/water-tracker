@@ -1,16 +1,12 @@
 """Base classes for API connection module."""
 
 from abc import ABC, abstractmethod
-from typing import Any
 
 import pandas as pd
 
 
 class BaseConnector(ABC):
     """Base class for connectors."""
-
-    def __init__(self) -> None:
-        pass
 
     @abstractmethod
     def retrieve(self, params: dict) -> pd.DataFrame:
@@ -26,7 +22,6 @@ class BaseConnector(ABC):
         pd.DataFrame
             Formatted output.
         """
-        ...
 
     @property
     @abstractmethod
@@ -38,7 +33,6 @@ class BaseConnector(ABC):
         list[str]
             Columns to keep
         """
-        ...
 
     @property
     @abstractmethod
@@ -50,20 +44,31 @@ class BaseConnector(ABC):
         list[str]
             Dates columns.
         """
-        ...
 
-    @abstractmethod
-    def _format_ouput(self, output: Any) -> pd.DataFrame:
-        """Format the output of the request sending function.
+    def format_ouput(
+        self,
+        output: pd.DataFrame,
+    ) -> pd.DataFrame:
+        """Format the output of the request function retrieve_data_next_page.
 
         Parameters
         ----------
-        output : Any
-            Output from the API call.
+        output : pd.DataFrame
+            Output of the API request made by retrieve_data_next_page.
 
         Returns
         -------
         pd.DataFrame
-            Formatted DataFrame
+            Formatted dataframe.
         """
-        ...
+        response_df = output.copy()
+        # Converting 'dates' columns to datetime
+        for column in self.date_columns:
+            if column in response_df.columns:
+                date_col = response_df.pop(column)
+                response_df[column] = pd.to_datetime(date_col)
+            elif column in self.columns_to_keep:
+                response_df[column] = pd.NaT
+        if self.columns_to_keep:
+            response_df = response_df.reindex(columns=self.columns_to_keep)
+        return response_df

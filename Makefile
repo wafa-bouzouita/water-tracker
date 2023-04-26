@@ -1,27 +1,61 @@
 PYTHON = $(shell command -v python 2> /dev/null)
 VIRTUAL_ENV = .venv
+HOOKS = .git/hooks
+DOTENV = .env
+ifeq ($(OS), Windows_NT)
+	BIN = ${VIRTUAL_ENV}/Scripts/
+else
+	BIN = ${VIRTUAL_ENV}/bin/
+endif
 STREAMLIT_MAIN_SCRIPT = app/main.py
+
+# Main Targets
 
 clean:
 	rm -rf ${VIRTUAL_ENV}
+	rm -rf ${HOOKS}
+
+${DOTENV}:
+	cp ${DOTENV}.template ${DOTENV}
 
 ${VIRTUAL_ENV}:
 	${PYTHON} -m venv ${VIRTUAL_ENV}
-	. .venv/Scripts/activate
-	pip install poetry
+	${BIN}python -m pip install --upgrade pip
+	${BIN}python -m pip install poetry
 
 .PHONY: poetry-install
 poetry-install: pyproject.toml poetry.lock
-	. .venv/Scripts/activate
-	poetry install
-
+	${BIN}poetry install --only main --ansi
 
 .PHONY: install
 install:
-	@${MAKE} -s ${VIRTUAL_ENV}
-	@${MAKE} -s poetry-install
+	${MAKE} -s ${DOTENV}
+	${MAKE} -s ${VIRTUAL_ENV}
+	${MAKE} -s poetry-install
 
 .PHONY: streamlit-run
-streamlit-run: 
-	. .venv/Scripts/activate
-	streamlit run ${STREAMLIT_MAIN_SCRIPT}
+streamlit-run:
+	${MAKE} -s install
+	${BIN}streamlit run ${STREAMLIT_MAIN_SCRIPT}
+
+# Development Targets
+
+.PHONY: poetry-install-dev
+poetry-install-dev: pyproject.toml poetry.lock
+	${BIN}poetry install --ansi
+
+.PHONY: hooks_install
+hooks-install: .pre-commit-config.yaml
+	${BIN}pre-commit install
+
+.PHONY: install
+install-dev:
+	${MAKE} -s ${DOTENV}
+	${MAKE} -s ${VIRTUAL_ENV}
+	${MAKE} -s poetry-install-dev
+	${MAKE} -s hooks-install
+
+.PHONY: test
+test:
+	${MAKE} -s install-dev
+	${BIN}pytest
