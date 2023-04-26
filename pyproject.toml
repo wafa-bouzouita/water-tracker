@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
-packages = [{ include = "water_tracker" }]
+packages = [{ include = "water_tracker", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "~3.10"
@@ -106,6 +106,7 @@ addopts = [
     "--cov",
 ]
 testpaths = ["tests"]
+pythonpath = ["src"]
 
 [tool.coverage.paths]
 source = ["water_tracker", "*/site-packages"]
@@ -116,3 +117,4 @@ source = ["water_tracker"]
 
 [tool.coverage.report]
 show_missing = true
+fail_under = 100

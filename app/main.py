@@ -4,8 +4,6 @@ import datetime as dt
 
 import plotly.graph_objects as go
 import streamlit as st
-from requests.exceptions import HTTPError
-
 from water_tracker import connectors, display
 
 default_start_date = "2022-01-01"
@@ -86,36 +84,26 @@ chronicles_params = {
     "date_debut_mesure": mesure_date_start,
     "date_fin_mesure": mesure_date_end,
 }
-try:
-    chronicles = chronicle_connector.retrieve(chronicles_params)
-except HTTPError:
-    message = "Echec de la connexion à l'API"
+chronicles = chronicle_connector.retrieve(chronicles_params)
+if not chronicles.empty:
+    scatter = go.Scatter(
+        x=chronicles["date_mesure"],
+        y=chronicles["niveau_nappe_eau"],
+    )
+    layout = go.Layout(
+        title={"text": f"Relevé Piézométrique de la station : {bss_code}"},
+        xaxis={"title": {"text": "Dates"}},
+        yaxis={"title": {"text": "Niveau Nappe"}},
+    )
+    figure = go.Figure(
+        data=[scatter],
+        layout=layout,
+    )
+else:
     figure = display.make_error_figure(
-        message=message,
+        message="Pas de données pour ce piézomètre.",
         title=f"Relevé Piézométrique de la station : {bss_code}",
         xtitle="Dates",
         ytitle="Niveau Nappe",
     )
-else:
-    if not chronicles.empty:
-        scatter = go.Scatter(
-            x=chronicles["date_mesure"],
-            y=chronicles["niveau_nappe_eau"],
-        )
-        layout = go.Layout(
-            title={"text": f"Relevé Piézométrique de la station : {bss_code}"},
-            xaxis={"title": {"text": "Dates"}},
-            yaxis={"title": {"text": "Niveau Nappe"}},
-        )
-        figure = go.Figure(
-            data=[scatter],
-            layout=layout,
-        )
-    else:
-        figure = display.make_error_figure(
-            message="Pas de données pour ce piézomètre.",
-            title=f"Relevé Piézométrique de la station : {bss_code}",
-            xtitle="Dates",
-            ytitle="Niveau Nappe",
-        )
 st.plotly_chart(figure, use_container_width=True)

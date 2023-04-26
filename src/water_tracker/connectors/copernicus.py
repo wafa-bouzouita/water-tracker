@@ -1,22 +1,20 @@
 """Copernicus Connectors."""
 
+import os
 import tempfile
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import cdsapi
 import pandas as pd
 import xarray as xr
+from cdsapi.api import Client
 from dotenv import load_dotenv
 
 from water_tracker.connectors.base import BaseConnector
 
-if TYPE_CHECKING:
-    from cdsapi.api import Client
 # Load the environment variables
 load_dotenv()
-
 
 default_years: list[int] = [2023]
 default_months: list[int] = [1]
@@ -71,7 +69,11 @@ class BaseERA5Connector(BaseConnector, ABC):
         , by default True
     """
 
-    client: "Client" = cdsapi.Client(verify=True)
+    client: Client = cdsapi.Client(
+        verify=True,
+        url=os.environ.get("CDSAPI_URL"),
+        key=os.environ.get("CDSAPI_KEY"),
+    )
     name: str = "reanalysis-era5-land"
     product_type: str = "reanalysis"
     file_format: str = "netcdf"
@@ -89,35 +91,6 @@ class BaseERA5Connector(BaseConnector, ABC):
         str
             Variable name.
         """
-        ...
-
-    def _format_ouput(
-        self,
-        output: pd.DataFrame,
-    ) -> pd.DataFrame:
-        """Format the output of the request function retrieve_data_next_page.
-
-        Parameters
-        ----------
-        output : pd.DataFrame
-            Output of the API request made by retrieve_data_next_page.
-
-        Returns
-        -------
-        pd.DataFrame
-            Formatted dataframe.
-        """
-        response_df = output.copy()
-        if self.columns_to_keep:
-            response_df = response_df.filter(self.columns_to_keep, axis=1)
-        # Converting 'dates' columns to datetime
-        if self.date_columns:
-            date_cols = self.date_columns
-            response_df.loc[:, date_cols] = response_df.loc[
-                :,
-                date_cols,
-            ].apply(pd.to_datetime)
-        return response_df
 
     def make_request(
         self,
@@ -182,17 +155,23 @@ class BaseERA5Connector(BaseConnector, ABC):
             dir=".",
             suffix=".nc",
         ) as file:
-            self.client.retrieve(
-                name=self.name,
-                request=params,
-                target=file.name,
-            )
-            # Loads data from the target file
-            output = xr.open_dataset(file.name).to_dataframe().reset_index()
+            try:
+                self.client.retrieve(
+                    name=self.name,
+                    request=params,
+                    target=file.name,
+                )
+            except Exception:  # noqa: BLE001
+                raw_df = pd.DataFrame()
+            else:
+                # Loads data from the target file
+                dataset = xr.open_dataset(file.name)
+                dataset_df = dataset.to_dataframe()
+                raw_df = dataset_df.reset_index()
             # Close the temporary file
             file.close()
             Path.unlink(Path(file.name))
-        return self._format_ouput(output)
+        return self.format_ouput(raw_df)
 
 
 class PrecipitationsERA5Connector(BaseERA5Connector):
