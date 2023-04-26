@@ -104,7 +104,7 @@ class PiezoStationsConnector(HubeauConnector):
         "bss_id",
         "code_departement",
         "nom_departement",
-        "nb_mesure_piezo",
+        "nb_mesures_piezo",
         "code_masse_eau",
         "libelle_pe",
     ]
