@@ -186,7 +186,12 @@ class PrecipitationsERA5Connector(BaseERA5Connector):
 
     variable: str = "total_precipitation"
 
-    columns_to_keep: list[str] = ["longitude", "latitude", "time", "tp"]
+    columns_to_keep: dict[str, str] = {
+        "longitude": "longitude",
+        "latitude": "latitude",
+        "time": "time",
+        "tp": "tp",
+    }
     date_columns: list[str] = ["time"]
 
     def retrieve(

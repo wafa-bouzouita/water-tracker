@@ -68,10 +68,11 @@ def test_retrieve_success(
     mocker.patch("xarray.open_dataset", return_value=xr.Dataset())
     mocker.patch("xarray.Dataset.to_dataframe", return_value=pd.DataFrame())
     mocker.patch("pandas.DataFrame.reset_index", return_value=raw_df)
-    connector.columns_to_keep = ["column1", "time"]
+    connector.columns_to_keep = {"column1": "column1", "time": "time"}
+    expected_columns = list(connector.columns_to_keep.values())
     connector.date_columns = ["time"]
     output_df = connector.retrieve({})
-    assert (output_df.columns == connector.columns_to_keep).all()
+    assert (output_df.columns == expected_columns).all()
     assert output_df.dtypes["time"] == "datetime64[ns]"
 
 
@@ -89,8 +90,9 @@ def test_retrieve_fail(
         Connector to use for the request.
     """
     mocker.patch("cdsapi.Client.retrieve", side_effect=Exception)
-    connector.columns_to_keep = ["column1", "time"]
+    connector.columns_to_keep = {"column1": "column1", "time": "time"}
+    expected_columns = list(connector.columns_to_keep.values())
     connector.date_columns = ["time"]
     output_df = connector.retrieve({})
-    assert (output_df.columns == connector.columns_to_keep).all()
+    assert (output_df.columns == expected_columns).all()
     assert output_df.dtypes["time"] == "datetime64[ns]"

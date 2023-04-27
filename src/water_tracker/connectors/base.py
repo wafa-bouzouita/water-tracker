@@ -25,7 +25,7 @@ class BaseConnector(ABC):
 
     @property
     @abstractmethod
-    def columns_to_keep(self) -> list[str]:
+    def columns_to_keep(self) -> dict[str, str]:
         """List of columns to keep in the final dataframe.
 
         Returns
@@ -62,6 +62,7 @@ class BaseConnector(ABC):
             Formatted dataframe.
         """
         response_df = output.copy()
+        columns_to_keep = self.columns_to_keep.keys()
         # Converting 'dates' columns to datetime
         for column in self.date_columns:
             if column in response_df.columns:
@@ -69,6 +70,7 @@ class BaseConnector(ABC):
                 response_df[column] = pd.to_datetime(date_col)
             elif column in self.columns_to_keep:
                 response_df[column] = pd.NaT
-        if self.columns_to_keep:
-            response_df = response_df.reindex(columns=self.columns_to_keep)
+        if columns_to_keep:
+            response_df = response_df.reindex(columns=columns_to_keep)
+            response_df = response_df.rename(columns=self.columns_to_keep)
         return response_df

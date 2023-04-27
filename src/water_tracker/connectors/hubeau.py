@@ -95,19 +95,19 @@ class PiezoStationsConnector(HubeauConnector):
     """
 
     url: str = "https://hubeau.eaufrance.fr/api/v1/niveaux_nappes/stations"
-    columns_to_keep: list[str] = [
-        "code_bss",
-        "date_debut_mesure",
-        "date_fin_mesure",
-        "code_commune_insee",
-        "nom_commune",
-        "bss_id",
-        "code_departement",
-        "nom_departement",
-        "nb_mesures_piezo",
-        "code_masse_eau",
-        "libelle_pe",
-    ]
+    columns_to_keep: dict[str, str] = {
+        "code_bss": "code_bss",
+        "date_debut_mesure": "date_debut_mesure",
+        "date_fin_mesure": "date_fin_mesure",
+        "code_commune_insee": "code_commune_insee",
+        "nom_commune": "nom_commune",
+        "bss_id": "bss_id",
+        "code_departement": "code_departement",
+        "nom_departement": "nom_departement",
+        "nb_mesures_piezo": "nb_mesures_piezo",
+        "code_masse_eau": "code_masse_eau",
+        "libelle_pe": "libelle_pe",
+    }
     date_columns: list[str] = [
         "date_debut_mesure",
         "date_fin_mesure",
@@ -145,13 +145,13 @@ class PiezoChroniclesConnector(HubeauConnector):
     """
 
     url: str = "https://hubeau.eaufrance.fr/api/v1/niveaux_nappes/chroniques"
-    columns_to_keep: list[str] = [
-        "code_bss",
-        "date_mesure",
-        "niveau_nappe_eau",
-        "qualification",
-        "profondeur_nappe",
-    ]
+    columns_to_keep: dict[str, str] = {
+        "code_bss": "code_bss",
+        "date_mesure": "date_mesure",
+        "niveau_nappe_eau": "niveau_nappe_eau",
+        "qualification": "qualification",
+        "profondeur_nappe": "profondeur_nappe",
+    }
     date_columns: list[str] = [
         "date_mesure",
     ]
