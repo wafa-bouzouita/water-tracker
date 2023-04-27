@@ -47,14 +47,14 @@ class BaseConnector(ABC):
 
     def format_ouput(
         self,
-        output: pd.DataFrame,
+        raw_df: pd.DataFrame,
         date_format: str | None,
     ) -> pd.DataFrame:
         """Format the output of the request function retrieve_data_next_page.
 
         Parameters
         ----------
-        output : pd.DataFrame
+        raw_df : pd.DataFrame
             Output of the API request made by retrieve_data_next_page.
         date_format: str | None
             Date format to pass to pd.to_datetime.
@@ -64,7 +64,7 @@ class BaseConnector(ABC):
         pd.DataFrame
             Formatted dataframe.
         """
-        response_df = output.copy()
+        response_df = raw_df.copy()
         columns_to_keep = self.columns_to_keep.keys()
         # Converting 'dates' columns to datetime
         for column in self.date_columns:

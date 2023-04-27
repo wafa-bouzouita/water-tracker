@@ -85,14 +85,14 @@ class HubeauConnector(BaseConnector, ABC):
 
     def format_ouput(
         self,
-        output: pd.DataFrame,
+        raw_df: pd.DataFrame,
         date_format: str | None = None,
     ) -> pd.DataFrame:
         """Format the output of the request function retrieve_data_next_page.
 
         Parameters
         ----------
-        output : pd.DataFrame
+        raw_df : pd.DataFrame
             Output of the API request made by retrieve_data_next_page.
         date_format: str | None
             Date format to pass to pd.to_datetime.
@@ -102,7 +102,7 @@ class HubeauConnector(BaseConnector, ABC):
         pd.DataFrame
             Formatted dataframe.
         """
-        return super().format_ouput(output, date_format=date_format)
+        return super().format_ouput(raw_df, date_format=date_format)
 
 
 class PiezoStationsConnector(HubeauConnector):
