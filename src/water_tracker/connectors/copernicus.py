@@ -173,6 +173,27 @@ class BaseERA5Connector(BaseConnector, ABC):
             Path.unlink(Path(file.name))
         return self.format_ouput(raw_df)
 
+    def format_ouput(
+        self,
+        output: pd.DataFrame,
+        date_format: str | None = None,
+    ) -> pd.DataFrame:
+        """Format the output of the request function retrieve_data_next_page.
+
+        Parameters
+        ----------
+        output : pd.DataFrame
+            Output of the API request made by retrieve_data_next_page.
+        date_format: str | None
+            Date format to pass to pd.to_datetime.
+
+        Returns
+        -------
+        pd.DataFrame
+            Formatted dataframe.
+        """
+        return super().format_ouput(output, date_format=date_format)
+
 
 class PrecipitationsERA5Connector(BaseERA5Connector):
     """Connector for total Precipitation Data Collection.

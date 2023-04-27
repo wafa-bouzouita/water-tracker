@@ -46,6 +46,38 @@ def test_format_output_date(
     assert output_df["date3"].isna().all()
 
 
+def test_format_output_date_different_date_format(
+    chronicles_connector: PiezoChroniclesConnector,
+) -> None:
+    """Test date output format.
+
+    Parameters
+    ----------
+    chronicles_connector : PiezoChroniclesConnector
+        Connector to use format_output from.
+    """
+    input_df = pd.DataFrame(
+        {
+            "date1": ["20200101", None, "19800101"],
+            "date2": [None, "20200201", "20210130"],
+        },
+    )
+    columns_to_keep = {"date1": "date1", "date3": "date3"}
+    expected_columns = list(columns_to_keep.values())
+    chronicles_connector.columns_to_keep = columns_to_keep
+    date_columns = ["date1", "date3"]
+    chronicles_connector.date_columns = date_columns
+    output_df = chronicles_connector.format_ouput(
+        input_df,
+        date_format="%Y%m%d",
+    )
+    dtypes = output_df.dtypes
+    assert (output_df.columns == expected_columns).all()
+    assert dtypes["date1"] == "datetime64[ns]"
+    assert dtypes["date3"] == "datetime64[ns]"
+    assert output_df["date3"].isna().all()
+
+
 def test_format_output_no_date(
     chronicles_connector: PiezoChroniclesConnector,
 ) -> None:

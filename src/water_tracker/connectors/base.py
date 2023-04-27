@@ -48,6 +48,7 @@ class BaseConnector(ABC):
     def format_ouput(
         self,
         output: pd.DataFrame,
+        date_format: str | None,
     ) -> pd.DataFrame:
         """Format the output of the request function retrieve_data_next_page.
 
@@ -55,6 +56,8 @@ class BaseConnector(ABC):
         ----------
         output : pd.DataFrame
             Output of the API request made by retrieve_data_next_page.
+        date_format: str | None
+            Date format to pass to pd.to_datetime.
 
         Returns
         -------
@@ -67,8 +70,11 @@ class BaseConnector(ABC):
         for column in self.date_columns:
             if column in response_df.columns:
                 date_col = response_df.pop(column)
-                response_df[column] = pd.to_datetime(date_col)
-            elif column in self.columns_to_keep:
+                response_df[column] = pd.to_datetime(
+                    date_col,
+                    format=date_format,
+                )
+            elif column in columns_to_keep:
                 response_df[column] = pd.NaT
         if columns_to_keep:
             response_df = response_df.reindex(columns=columns_to_keep)
