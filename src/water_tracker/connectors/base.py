@@ -45,7 +45,7 @@ class BaseConnector(ABC):
             Dates columns.
         """
 
-    def format_ouput(
+    def format_output(
         self,
         raw_df: pd.DataFrame,
         date_format: str | None,

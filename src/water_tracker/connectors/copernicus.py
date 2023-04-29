@@ -171,9 +171,9 @@ class BaseERA5Connector(BaseConnector, ABC):
             # Close the temporary file
             file.close()
             Path.unlink(Path(file.name))
-        return self.format_ouput(raw_df)
+        return self.format_output(raw_df)
 
-    def format_ouput(
+    def format_output(
         self,
         raw_df: pd.DataFrame,
         date_format: str | None = None,
@@ -192,7 +192,7 @@ class BaseERA5Connector(BaseConnector, ABC):
         pd.DataFrame
             Formatted dataframe.
         """
-        return super().format_ouput(raw_df, date_format=date_format)
+        return super().format_output(raw_df, date_format=date_format)
 
 
 class PrecipitationsERA5Connector(BaseERA5Connector):

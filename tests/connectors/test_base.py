@@ -38,7 +38,7 @@ def test_format_output_date(
     chronicles_connector.columns_to_keep = columns_to_keep
     date_columns = ["date1", "date3"]
     chronicles_connector.date_columns = date_columns
-    output_df = chronicles_connector.format_ouput(input_df)
+    output_df = chronicles_connector.format_output(input_df)
     dtypes = output_df.dtypes
     assert (output_df.columns == expected_columns).all()
     assert dtypes["date1"] == "datetime64[ns]"
@@ -67,7 +67,7 @@ def test_format_output_date_different_date_format(
     chronicles_connector.columns_to_keep = columns_to_keep
     date_columns = ["date1", "date3"]
     chronicles_connector.date_columns = date_columns
-    output_df = chronicles_connector.format_ouput(
+    output_df = chronicles_connector.format_output(
         input_df,
         date_format="%Y%m%d",
     )
@@ -103,7 +103,7 @@ def test_format_output_no_date(
     expected_columns = list(columns_keep.values())
     chronicles_connector.columns_to_keep = columns_keep
     chronicles_connector.date_columns = []
-    output_df = chronicles_connector.format_ouput(input_df)
+    output_df = chronicles_connector.format_output(input_df)
     assert (output_df.columns == expected_columns).all()
     assert (output_df["column1"] == input_df["column1"]).all()
     assert (output_df["column2"] == input_df["column2"]).all()
@@ -135,7 +135,7 @@ def test_columns_renaming(
     expected_columns = list(columns_keep.values())
     chronicles_connector.columns_to_keep = columns_keep
     chronicles_connector.date_columns = []
-    output_df = chronicles_connector.format_ouput(input_df)
+    output_df = chronicles_connector.format_output(input_df)
     assert (output_df.columns == expected_columns).all()
     assert (output_df["column5"] == input_df["column1"]).all()
     assert (output_df["column2"] == input_df["column2"]).all()
@@ -164,7 +164,7 @@ def test_format_output_empty_columns_to_keep(
     date_columns: list = []
     chronicles_connector.columns_to_keep = columns_keep
     chronicles_connector.date_columns = date_columns
-    output_df = chronicles_connector.format_ouput(input_df)
+    output_df = chronicles_connector.format_output(input_df)
     assert output_df.equals(input_df)
 
 
@@ -195,7 +195,7 @@ def test_format_output_date_and_values(
     date_columns: list = ["date1", "date2"]
     chronicles_connector.columns_to_keep = columns_keep
     chronicles_connector.date_columns = date_columns
-    output_df = chronicles_connector.format_ouput(input_df)
+    output_df = chronicles_connector.format_output(input_df)
     assert (output_df.columns == expected_columns).all()
     assert (output_df["column1"] == input_df["column1"]).all()
     assert (output_df["column2"] == input_df["column2"]).all()
@@ -225,7 +225,7 @@ def test_format_output_date_and_values_empty(
     date_columns: list = ["date1", "date2"]
     chronicles_connector.columns_to_keep = columns_keep
     chronicles_connector.date_columns = date_columns
-    output_df = chronicles_connector.format_ouput(input_df)
+    output_df = chronicles_connector.format_output(input_df)
     assert (output_df.columns == input_df.columns).all()
     assert (output_df["column1"] == input_df["column1"]).all()
     assert (output_df["column2"] == input_df["column2"]).all()
