@@ -6,9 +6,15 @@ from water_tracker.connectors.hubeau import (
     PiezoChroniclesConnector,
     PiezoStationsConnector,
 )
+from water_tracker.connectors.meteo_france import (
+    PrecipitationsMFConnector,
+    SSWIMFConnector,
+)
 
 __all__ = [
     "PiezoChroniclesConnector",
     "PiezoStationsConnector",
     "PrecipitationsERA5Connector",
+    "SSWIMFConnector",
+    "PrecipitationsMFConnector",
 ]
