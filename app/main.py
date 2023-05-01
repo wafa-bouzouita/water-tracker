@@ -1,6 +1,7 @@
 """Main script to run for streamlit app."""
 
 import datetime as dt
+from pathlib import Path
 
 import plotly.graph_objects as go
 import streamlit as st
@@ -16,6 +17,14 @@ departements = [*list(range(1, 20)), "2A", "2B", *list(range(21, 96))]
 code_departement = st.selectbox(
     label="Sélection du département",
     options=[str(dpt).zfill(2) for dpt in departements],
+)
+precips_connector = connectors.PrecipitationsMFConnector()
+precips = precips_connector.retrieve(
+    {
+        "filepath_or_buffer": Path("data-mf/precipitations_mars.csv"),
+        "delimiter": ";",
+        "decimal": ",",
+    },
 )
 stations_connector = connectors.PiezoStationsConnector()
 stations_params = {
@@ -86,6 +95,22 @@ chronicles_params = {
     "date_fin_mesure": mesure_date_end,
 }
 chronicles = chronicle_connector.retrieve(chronicles_params)
+# Rain levels
+local_precip = precips[precips["zone"] == code_departement].iloc[0, :]
+rain_surplus = round(100 * (1 - local_precip["ratio_precip"]))
+if rain_surplus > 0:
+    color = "green"
+elif rain_surplus == 0:
+    color = "blue"
+else:
+    color = "red"
+_, col_rain, _, col_swi, _ = st.columns([2, 3, 1, 3, 2])
+col_rain.markdown(f"## :{color}[{rain_surplus:+}%]")
+col_rain.markdown(
+    "Volume de pluie par rapport à la normale sur le département.",
+)
+
+# Piezometric chart
 if not chronicles.empty:
     scatter = go.Scatter(
         x=chronicles["date_mesure"],
