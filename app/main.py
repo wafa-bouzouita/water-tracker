@@ -60,9 +60,10 @@ bss_code = stations.loc[bss_code_id, "code_bss"]
 min_date = stations.loc[bss_code_id, "date_debut_mesure"]
 max_date = stations.loc[bss_code_id, "date_fin_mesure"]
 col1, col2 = st.columns(2)
+default = max((max_date - dt.timedelta(days=365)), min_date)
 mesure_date_start = col1.date_input(
     label="Date de début de mesure",
-    value=(max_date - dt.timedelta(days=365)),
+    value=default,
     max_value=max_date,
     min_value=min_date,
 )
