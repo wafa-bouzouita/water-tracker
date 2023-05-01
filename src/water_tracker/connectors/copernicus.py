@@ -77,6 +77,7 @@ class BaseERA5Connector(BaseConnector, ABC):
     name: str = "reanalysis-era5-land"
     product_type: str = "reanalysis"
     file_format: str = "netcdf"
+    date_format: str | None = None
 
     def __init__(self, reload: bool = True) -> None:
         self.reload = reload
@@ -172,27 +173,6 @@ class BaseERA5Connector(BaseConnector, ABC):
             file.close()
             Path.unlink(Path(file.name))
         return self.format_output(raw_df)
-
-    def format_output(
-        self,
-        raw_df: pd.DataFrame,
-        date_format: str | None = None,
-    ) -> pd.DataFrame:
-        """Format the output of the request function retrieve_data_next_page.
-
-        Parameters
-        ----------
-        raw_df : pd.DataFrame
-            Output of the API request made by retrieve_data_next_page.
-        date_format: str | None
-            Date format to pass to pd.to_datetime.
-
-        Returns
-        -------
-        pd.DataFrame
-            Formatted dataframe.
-        """
-        return super().format_output(raw_df, date_format=date_format)
 
 
 class PrecipitationsERA5Connector(BaseERA5Connector):

@@ -45,10 +45,14 @@ class BaseConnector(ABC):
             Dates columns.
         """
 
+    @property
+    @abstractmethod
+    def date_format(self) -> str | None:
+        """Format to use to parse date columns."""
+
     def format_output(
         self,
         raw_df: pd.DataFrame,
-        date_format: str | None,
     ) -> pd.DataFrame:
         """Format the output of the request function retrieve_data_next_page.
 
@@ -72,7 +76,7 @@ class BaseConnector(ABC):
                 date_col = response_df.pop(column)
                 response_df[column] = pd.to_datetime(
                     date_col,
-                    format=date_format,
+                    format=self.date_format,
                 )
             elif column in columns_to_keep:
                 response_df[column] = pd.NaT

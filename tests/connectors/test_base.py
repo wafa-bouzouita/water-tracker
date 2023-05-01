@@ -67,10 +67,8 @@ def test_format_output_date_different_date_format(
     chronicles_connector.columns_to_keep = columns_to_keep
     date_columns = ["date1", "date3"]
     chronicles_connector.date_columns = date_columns
-    output_df = chronicles_connector.format_output(
-        input_df,
-        date_format="%Y%m%d",
-    )
+    chronicles_connector.date_format = "%Y%m%d"
+    output_df = chronicles_connector.format_output(input_df)
     dtypes = output_df.dtypes
     assert (output_df.columns == expected_columns).all()
     assert dtypes["date1"] == "datetime64[ns]"

@@ -59,6 +59,7 @@ class PrecipitationsMFConnector(MeteoFranceConnector):
         "Rap RRSm Ag": "ratio_precip",
     }
     date_columns: list[str] = []
+    date_format: str | None = None
 
     def __init__(self) -> None:
         super().__init__()
@@ -67,7 +68,6 @@ class PrecipitationsMFConnector(MeteoFranceConnector):
     def format_output(
         self,
         raw_df: pd.DataFrame,
-        date_format: str | None = "%Y%m%d",
     ) -> pd.DataFrame:
         """Format the output of the request function.
 
@@ -75,18 +75,13 @@ class PrecipitationsMFConnector(MeteoFranceConnector):
         ----------
         raw_df : pd.DataFrame
             Output of the request.
-        date_format: str | None
-            Date format to pass to pd.to_datetime.
 
         Returns
         -------
         pd.DataFrame
             Formatted dataframe.
         """
-        formatted = super().format_output(
-            raw_df=raw_df,
-            date_format=date_format,
-        )
+        formatted = super().format_output(raw_df=raw_df)
         zone_col = formatted.pop(self.zone_column)
         formatted[self.zone_column] = zone_col.replace(self.dept_mapping)
         return formatted
