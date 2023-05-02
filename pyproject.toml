@@ -59,10 +59,13 @@ ignore = [
     "E731",
     # Too many arguments to function call
     "PLR0913",
+    # Magic value used in comparison, consider replacing {value} with a constant variable
+    "PLR2004",
     # Missing type annotation for `self` in method
     "ANN101",
     # suppressible-exception
     "SIM105",
+    # File {filename} is part of an implicit namespace package. Add an __init__.py.
     "INP001",
 ]
 unfixable = [
