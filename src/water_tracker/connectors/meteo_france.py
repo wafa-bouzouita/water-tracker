@@ -30,11 +30,13 @@ class MeteoFranceConnector(BaseConnector, ABC):
             Formatted output.
         """
         raw_df = pd.read_csv(**params)
-        return self.format_output(raw_df, date_format=None)
+        return self.format_output(raw_df)
 
 
 class SSWIMFConnector(MeteoFranceConnector):
     """Connector class to retrieve SSWI data from Meteo France."""
+
+    date_format: str = "%Y%m%d"
 
     columns_to_keep: dict[str, str] = {
         "LON": "longitude",
@@ -46,6 +48,21 @@ class SSWIMFConnector(MeteoFranceConnector):
     date_columns: list[str] = [
         "DATE",
     ]
+
+    def retrieve(self, params: dict) -> pd.DataFrame:
+        """Retrieve data from Meteo France.
+
+        Parameters
+        ----------
+        params : dict
+            Parameters for the request.
+
+        Returns
+        -------
+        pd.DataFrame
+            Formatted output.
+        """
+        return super().retrieve(params)
 
 
 class PrecipitationsMFConnector(MeteoFranceConnector):
