@@ -1,1 +1,1 @@
-"""Tests for AP-connection related objects."""
+"""Tests for API-connection related objects."""
