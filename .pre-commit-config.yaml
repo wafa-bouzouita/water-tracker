@@ -10,6 +10,7 @@ repos:
       - id: check-toml
       - id: check-docstring-first
       - id: check-added-large-files
+        args: ["--maxkb=1500"]
       - id: detect-private-key
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: 'v0.0.254'
