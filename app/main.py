@@ -5,7 +5,7 @@ from pathlib import Path
 
 import plotly.graph_objects as go
 import streamlit as st
-from water_tracker import connectors, display
+from water_tracker import connectors, display, transformers
 
 default_start_date = "2022-01-01"
 default_end_date = "2022-12-31"
@@ -32,7 +32,7 @@ stations_params = {
 }
 stations = stations_connector.retrieve(stations_params)
 
-# Remove stations with measuring dates
+# Remove stations without measuring dates
 has_no_start_measure_date = stations["date_debut_mesure"].isna()
 has_no_end_measure_date = stations["date_fin_mesure"].isna()
 has_no_measure_date = has_no_start_measure_date & has_no_end_measure_date
@@ -104,10 +104,33 @@ elif rain_surplus == 0:
     color = "blue"
 else:
     color = "red"
-_, col_rain, _, col_swi, _ = st.columns([2, 3, 1, 3, 2])
+
+# SSWI levels
+
+sswi_connector = connectors.SSWIMFConnector()
+sswi_df = sswi_connector.retrieve(
+    {
+        "filepath_or_buffer": "data-mf/SSWI_avril_decade2.txt",
+        "delimiter": ";",
+        "decimal": ",",
+    },
+)
+sswi_transformer = transformers.SSWIMFTransformer(
+    ["extremely_dry", "very_dry"],
+)
+dry_pers = sswi_transformer.transform(sswi_df, "latitude", "longitude", "sswi")
+dry_per = round(dry_pers[code_departement])
+sswi_color = "red" if dry_per > 0 else "blue"
+
+# Display rain levels & dry percentage
+_, col_rain, _, col_sswi, _ = st.columns([2, 3, 1, 3, 2])
 col_rain.markdown(f"## :{color}[{rain_surplus:+}%]")
 col_rain.markdown(
     "Volume de pluie par rapport à la normale sur le département.",
+)
+col_sswi.markdown(f"## :{sswi_color}[{dry_per}%]")
+col_sswi.markdown(
+    "Pourcentage du département avec des sols très secs.",
 )
 
 # Piezometric chart
