@@ -1,7 +1,8 @@
-PYTHON = $(shell command -v python 2> /dev/null)
-VIRTUAL_ENV = .venv
-HOOKS = .git/hooks
-DOTENV = .env
+GLOBAL_PYTHON := $(shell command -v python 2> /dev/null)
+GLOBAL_POETRY := $(shell command -v poetry 2> /dev/null)
+VIRTUAL_ENV := .venv
+HOOKS := .git/hooks
+DOTENV := .env
 ifeq ($(OS), Windows_NT)
 	BIN = ${VIRTUAL_ENV}/Scripts/
 else
@@ -18,14 +19,21 @@ clean:
 ${DOTENV}:
 	cp ${DOTENV}.template ${DOTENV}
 
+# Poetry targets
+
+check-poetry:
+	@if [ -z $(GLOBAL_POETRY) ]; then echo "Poetry is not installed on your global python. Use 'make install-poetry' to install Poetry on your global python."; exit 2 ;fi
+
+install-poetry:
+	curl -sSL https://install.python-poetry.org | ${GLOBAL_PYTHON} -
+
 ${VIRTUAL_ENV}:
-	${PYTHON} -m venv ${VIRTUAL_ENV}
-	${BIN}python -m pip install --upgrade pip
-	${BIN}python -m pip install poetry
+	${GLOBAL_PYTHON} -m venv ${VIRTUAL_ENV}
 
 .PHONY: poetry-install
 poetry-install: pyproject.toml poetry.lock
-	${BIN}poetry install --only main --ansi
+	${MAKE} -s check-poetry
+	${GLOBAL_POETRY} install --only main --ansi
 
 .PHONY: install
 install:
@@ -42,7 +50,8 @@ streamlit-run:
 
 .PHONY: poetry-install-dev
 poetry-install-dev: pyproject.toml poetry.lock
-	${BIN}poetry install --ansi
+	${MAKE} -s check-poetry
+	${GLOBAL_POETRY} install --ansi
 
 .PHONY: hooks_install
 hooks-install: .pre-commit-config.yaml
