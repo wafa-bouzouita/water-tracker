@@ -35,7 +35,7 @@ class ChroniclesFigure:
         self.y = y_column
         self._traces: list["Scatter"] = []
         self.figure = go.Figure()
-        self._title = title
+        self.title = title
         self._empty = False
 
     def add_error_annotation(self) -> None:
