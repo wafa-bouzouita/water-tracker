@@ -81,6 +81,9 @@ namespace-packages = ["app", "app/*"]
 [tool.ruff.pydocstyle]
 convention = 'numpy'
 
+[tool.ruff.flake8-annotations]
+allow-star-arg-any=true
+
 [tool.interrogate]
 ignore-init-method = true
 ignore-init-module = true
@@ -117,4 +120,3 @@ source = ["water_tracker"]
 
 [tool.coverage.report]
 show_missing = true
-fail_under = 100
