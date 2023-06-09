@@ -1,11 +1,9 @@
 """Main script to run for streamlit app."""
 
-import datetime as dt
-
 import numpy as np
 import streamlit as st
 from water_tracker import connectors
-from water_tracker.display import chronicles
+from water_tracker.display import chronicles, defaults, inputs
 from water_tracker.transformers import trends
 
 default_start_date = "2022-01-01"
@@ -13,12 +11,16 @@ default_end_date = "2022-12-31"
 st.set_page_config(page_title="Water-Tracker", layout="wide")
 st.title("Water-Tracker")
 
-departements = [*list(range(1, 20)), "2A", "2B", *list(range(21, 96))]
-
-code_departement = st.selectbox(
-    label="Sélection du département",
-    options=[str(dpt).zfill(2) for dpt in departements],
+dept_input = inputs.DepartmentInput(
+    "Sélection du Département",
+    defaults.DefaultDepartement(
+        st.experimental_get_query_params(),
+        "longitude",
+        "latitude",
+    ),
 )
+code_departement = dept_input.build(st.container())
+
 stations_connector = connectors.PiezoStationsConnector()
 stations_params = {
     "code_departement": code_departement,
@@ -34,52 +36,30 @@ valid_stations = stations.drop(index=stations[has_no_measure_date].index)
 unknown_name = valid_stations["nom_commune"].isna()
 valid_stations.loc[unknown_name, "nom_commune"] = "Commune Inconnue"
 
-
-def format_func(row_id: int) -> str:
-    """Format the bss code display name.
-
-    Parameters
-    ----------
-    row_id : int
-        Index of the row to display the code of.
-
-    Returns
-    -------
-    str
-        'bss_code (city name)'
-    """
-    bss_code = valid_stations.loc[row_id, "code_bss"]
-    city_name = valid_stations.loc[row_id, "nom_commune"]
-    return f"{bss_code} ({city_name})"
-
-
-bss_code_id = st.selectbox(
-    label="Sélection du code bss de la station",
-    options=valid_stations.index,
-    format_func=format_func,
+station_input = inputs.StationInput(
+    label="Sélection du code BSS de la station",
+    stations_df=valid_stations,
+    default_input=defaults.DefaultStation(
+        stations_df=valid_stations,
+    ),
+    bss_field_name="code_bss",
+    city_field_name="nom_commune",
 )
+bss_code_id = station_input.build(st.container())
+
 bss_code = valid_stations.loc[bss_code_id, "code_bss"]
 min_date = valid_stations.loc[bss_code_id, "date_debut_mesure"]
 max_date = valid_stations.loc[bss_code_id, "date_fin_mesure"]
-col1, col2 = st.columns(2)
-default = max((max_date - dt.timedelta(days=365)), min_date)
-mesure_date_start = col1.date_input(
-    label="Date de début de mesure",
-    value=default,
-    max_value=max_date,
-    min_value=min_date,
-)
-if type(mesure_date_start) == dt.date:
-    min_date_end = mesure_date_start
-else:
-    min_date_end = min_date
 
-mesure_date_end = col2.date_input(
-    label="Date de fin de mesure",
-    value=max_date,
-    max_value=max_date,
-    min_value=min_date_end,
+period_input = inputs.PeriodInput(
+    "Date de début de mesure",
+    "Date de fin de mesure",
+    min_date,
+    max_date,
+    defaults.DefaultMinDate(min_date, max_date),
+    defaults.DefaultMaxDate(min_date, max_date),
 )
+date_start, date_end = period_input.build(st.container())
 
 # Chronicles
 
@@ -110,8 +90,8 @@ trend_props = trends.TrendProperties(
 chronicle_connector = connectors.PiezoChroniclesConnector()
 chronicles_params = {
     "code_bss": bss_code,
-    "date_debut_mesure": mesure_date_start,
-    "date_fin_mesure": mesure_date_end,
+    "date_debut_mesure": date_start,
+    "date_fin_mesure": date_end,
 }
 chronicles_df = chronicle_connector.retrieve(chronicles_params)
 display_trend = False

@@ -19,6 +19,8 @@ python-dotenv = "^1.0.0"
 netcdf4 = "^1.6.3"
 scipy = "^1.10.1"
 plotly = "^5.14.1"
+geopandas = "^0.13.0"
+shapely = "^2.0.1"
 
 
 [tool.poetry.group.dev.dependencies]
