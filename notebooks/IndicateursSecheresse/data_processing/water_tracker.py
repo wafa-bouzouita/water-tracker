@@ -62,18 +62,19 @@ class WaterTracker():
             response = requests.get(f'https://api.emi.imageau.eu/app/departments/{departement_code}', params=params, headers=headers)
         except Exception as e:
             print(e)
-            return
+            return None
         else:
             if response.status_code == 200:
                 return dict(response.json())
             else:
+                print(f"Request failed with status code {response.status_code}")
                 return None 
 
     def build_stations_data(self):
         """
         Call this function to create the df_stations.csv file storing all data about stations that are needed for further computations (timeseries, computation of standardized indicators, plots)
         """
-        stations_data = self.stations_data()
+        stations_data = self.download_stations_data()
         res = []
         for departement_code in stations_data.keys():
             for station in stations_data[departement_code]["data"]["locations"]:
@@ -118,6 +119,7 @@ class WaterTracker():
         df = pd.read_csv("./data/df_stations.csv")
         cpt = 0
         n = len(df)
+        os.makedirs(f"{os.path.dirname(__file__)}/data/timeseries", exist_ok=True)
         for i, row in df.iterrows():
             station_id = row["id"]
             if station_id not in self.black_listed_station_ids:
@@ -126,9 +128,10 @@ class WaterTracker():
                 if row["dryness-meteo"]==1 or row["dryness-groundwater-deep"]==1 or row["dryness-groundwater"]==1:
                     
                     filename = f"./data/timeseries/{station_id}.csv"
-                    
+                    d = None 
                     if not os.path.isfile(filename):
                         d = self.download_timeseries_station(station_id, start_date, today)
+                    if d is not None:  # Check if the download is successful    
                         if row["dryness-meteo"]==1:
                             timeseries = pd.DataFrame(d[self.mapping_indicator_names["dryness-meteo"]])[["date","value"]]
                         elif row["dryness-groundwater-deep"]==1 or row["dryness-groundwater"]==1:
@@ -208,17 +211,20 @@ class WaterTracker():
                     start_date = (date.today()-timedelta(days=min_number_years*365)).strftime("%Y-%m-%d")
                     timeseries = timeseries[timeseries["date"]>=start_date]
                     timeseries = timeseries.set_index("date")
-                    self.timeseries[indicateur][station_id] = timeseries
+                    self.timeseries[indicateur][station_id] =timeseries
+                    pickle.dump(self.timeseries, open(f"{self.data_folder}timeseries.pkl", "wb"))     
         print(f"Terminé")
-
+  
     def save_data(self, data, filename):
         print(f"Saving into {filename}")
         pickle.dump(data, open(filename, "wb"))
     
     def save_timeseries(self):
+
         print(f"Saving timeseries into {self.data_folder}timeseries.pkl")
         pickle.dump(self.timeseries, open(f"{self.data_folder}timeseries.pkl", "wb"))
-
+    
+            
     def save_timeseries_computed(self):
         print(f"Saving timeseries_computed into {self.data_folder}timeseries_computed.pkl")
         pickle.dump(self.timeseries_computed, open(f"{self.data_folder}timeseries_computed.pkl", "wb"))
