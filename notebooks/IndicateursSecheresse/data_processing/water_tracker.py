@@ -27,14 +27,9 @@ class WaterTracker():
         self.timeseries_computed = {}
         self.standardized_indicator_means_last_year = {}
         self.aggregated_standardized_indicator_means_last_year = {}
-        self.levels = { -1.78        : "Très bas",
-                        -0.84        : "Bas",
-                        -0.25        : "Modérément bas",
-                         0.25        : "Autour de la normale",
-                         0.84        : "Modérément haut",
-                         1.28        : "Haut",
-                         float('inf'): "Très haut"
-                      }
+        self.levels = {-1.28: "Très bas", -0.84: "Bas", -0.25: "Modérément bas",
+                              0.25: "Autour de la normale", 0.84: "Modérément haut",
+                              1.28: "Haut", float('inf'): "Très haut" }
         self.mapping_indicator_names = {"dryness-meteo":"rain-level",
                                         "dryness-groundwater":"water-level-static",
                                         "dryness-groundwater-deep":"water-level-static",
@@ -233,10 +228,17 @@ class WaterTracker():
         print(f"Saving standardized_indicator_means_last_year into {self.data_folder}standardized_indicator_means_last_year.pkl")
         pickle.dump(self.standardized_indicator_means_last_year, open(f"{self.data_folder}standardized_indicator_means_last_year.pkl", "wb"))
     
+   
+
     def save_aggregated_standardized_indicator_means_last_year(self):
         print(f"Saving aggregated_standardized_indicator_means_last_year into {self.data_folder}aggregated_standardized_indicator_means_last_year.pkl")
         pickle.dump(self.aggregated_standardized_indicator_means_last_year, open(f"{self.data_folder}aggregated_standardized_indicator_means_last_year.pkl", "wb"))
+    
 
+
+
+    
+    
     def save(self):
         """
         Save all the data that are stored
@@ -245,7 +247,6 @@ class WaterTracker():
         self.save_timeseries_computed()
         self.save_standardized_indicator_means_last_year()
         self.save_aggregated_standardized_indicator_means_last_year()
-        
         
     def load(self):
         """
@@ -297,7 +298,13 @@ class WaterTracker():
                                                                                 dist_type="gam",
                                                                                 )
                 
-                timeseries_computed.columns = ["date", f"roll_{scale}{freq}", standardized_indicator]
+                #timeseries_computed.columns = ["date", f"roll_{scale}{freq}", standardized_indicator]
+                if indicateur == "pluviométrie":
+                    # Utilisation de la somme glissante sur 3 mois
+                    timeseries_computed.columns = ["date", f"roll_{scale}{freq}", standardized_indicator]
+                else:
+                    # Utilisation de la moyenne glissante sur 3 mois
+                    timeseries_computed.columns = ["date", f"mean_{scale}{freq}", standardized_indicator]
                 self.timeseries_computed[indicateur][station_id] = timeseries_computed
 
                 timeseries_tmp = timeseries_computed[timeseries_computed["date"] >= one_year_before]
@@ -365,12 +372,21 @@ class WaterTracker():
         image_filename = f'./images/{indicateur}.pdf'
         print(f"Sauvegarde du graphique dans {image_filename}")
         fig.savefig(image_filename, bbox_inches='tight')
+        # Sauvegarder les données dans un fichier spécifique à l'indicateur
+        #data_filename = f'./data/{indicateur}_data.csv'
+       # print(f"Sauvegarde des données dans {data_filename}")
+       # df_levels.to_csv(data_filename, index=False)
+         # Sauvegarder les données dans un fichier spécifique à l'indicateur
+        #data_filename = f'./data/{indicateur}_data.csv'
+        #print(f"Sauvegarde des données dans {data_filename}")
+        #df_levels.to_csv(data_filename, index=False)
         return df_levels
 
     def standardized_indicator_to_level_code(self, standardized_indicator_value):
-        for i, (k, v) in enumerate(self.levels.items()):
-            if standardized_indicator_value < k:
-                return i
+       for i, (k, v) in enumerate(self.levels.items()):
+           if standardized_indicator_value < k:
+               return i
+    
 
     def process(self, indicateur):
         """
@@ -409,7 +425,12 @@ class WaterTracker():
                                                                         dist_type="gam",
                                                                         )
         
-        timeseries_computed.columns = ["date", f"roll_{scale}{freq}", standardized_indicator]
+        if indicateur == "pluviométrie":
+                    # Utilisation de la somme glissante sur 3 mois
+                    timeseries_computed.columns = ["date", f"roll_{scale}{freq}", standardized_indicator]
+        else:
+                    # Utilisation de la moyenne glissante sur 3 mois
+                    timeseries_computed.columns = ["date", f"mean_{scale}{freq}", standardized_indicator]
         #self.timeseries_computed[indicateur][id_station] = timeseries_computed
 
         timeseries_tmp = timeseries_computed[timeseries_computed["date"] >= one_year_before]
@@ -438,3 +459,7 @@ class WaterTracker():
         max_t = Q3 + c*IQR
         df["outlier"] = (df[col].clip(lower = min_t,upper=max_t) != df[col])
         return df[~df["outlier"]].drop("outlier",axis=1)
+
+    # ... (autres parties du code)
+
+        
