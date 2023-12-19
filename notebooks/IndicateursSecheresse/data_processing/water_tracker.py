@@ -402,9 +402,6 @@ class WaterTracker():
         image_filename = f'./images/{indicateur}.pdf'
         print(f"Sauvegarde du graphique dans {image_filename}")
         fig.savefig(image_filename, bbox_inches='tight')
-        data_filename = f'./data/{indicateur}_data.csv'
-        print(f"Saving data to {data_filename}")
-        df_levels.to_csv(data_filename, index=False)
 
         # The following code is commented out and seems to be a duplicate
         data_filename = f'./data/{indicateur}_data.csv'
@@ -507,8 +504,4 @@ class WaterTracker():
         max_t = Q3 + c*IQR
         df["outlier"] = (df[col].clip(lower = min_t,upper=max_t) != df[col])
         return df[~df["outlier"]].drop("outlier",axis=1)
-
-
-
-    # ... (autres parties du code)
 
