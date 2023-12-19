@@ -12,8 +12,8 @@ class WaterTracker():
     def __init__(self, api_key):
         self.api_key = api_key
         self.data_folder = "data/"
-        self.timeseries_folder = self.data_folder+"timeseries/"
-        self.df_stations = pd.read_csv(f"{self.data_folder}df_stations.csv")
+        #self.timeseries_folder = self.data_folder+"timeseries/"
+        #self.df_stations = pd.read_csv(f"{self.data_folder}df_stations.csv")
         self.mapping_indicateur_column = {"pluviométrie":"dryness-meteo", 
                                           "nappes": "dryness-groundwater"
                                           }
@@ -106,8 +106,8 @@ class WaterTracker():
         output_filename = os.path.abspath("./data/df_stations.csv")
         print(f"Sauvegarde des données des stations dans {output_filename}")
         df_stations.to_csv(output_filename, index=False)
-        #self.timeseries_folder = self.data_folder+"timeseries/"
-        #self.df_stations = pd.read_csv(f"{self.data_folder}df_stations.csv")
+        self.timeseries_folder = self.data_folder+"timeseries/"
+        self.df_stations = pd.read_csv(f"{self.data_folder}df_stations.csv")
 
     
 
