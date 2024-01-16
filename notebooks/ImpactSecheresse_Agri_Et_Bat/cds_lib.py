@@ -27,9 +27,9 @@ def get_data_init():
             'version': 'v202212',
             'format': 'zip',
         },
-        'data/download.zip')
+        'data/download_init.zip')
 
-    with ZipFile('data/download.zip') as myzip:
+    with ZipFile('data/download_init.zip') as myzip:
         myzip.extractall('data')
 
 
@@ -53,12 +53,12 @@ def get_data_2023():
             'version': 'v202012',
             'format': 'zip',
         },
-        'data_2023/download.zip')
+        'data/download_2023.zip')
 
-    with ZipFile('data_2023/download.zip') as myzip:
-            myzip.extractall('data_2023')
+    with ZipFile('data/download_2023.zip') as myzip:
+            myzip.extractall('data')
 
 #get_data_init()
-#get_data_2023()
+get_data_2023()
 
 
