@@ -118,12 +118,13 @@ class RestrictionEau():
             self.all_restriction_data = pd.merge(
                 self.all_restriction_data, self.df_corres_commune_insee, on='code_insee', how='inner'
             ).drop_duplicates().groupby(['departement', 'date'])['numero_niveau'].max().reset_index()
-        self.all_restriction_data.drop_duplicates(inplace=True)
 
     def _aggregate_and_restructure_data(self):
         """Aggregates data by year and month, and restructures the DataFrame."""
 
         self.all_restriction_data['date'] = self.all_restriction_data['date'].apply(lambda x: x.strftime("%Y-%m") if pd.notnull(x) else x) #if filter_per_month else self.all_restriction_data['date'].strftime("%Y")
+        self.all_restriction_data.drop_duplicates(inplace=True)
+
         grouping_cols = ['date', 'numero_niveau']
         count_col = 'nbre_de_departement_arrete_par_mois' #if filter_per_month else 'nbre_de_departement_arrete_par_annee'
 
